@@ -22,6 +22,7 @@ void sign_handler(int signo, siginfo_t *siginf, void *ptr)
 		{
 			printf("%d TERMINATED WITH EXIT CODE: %d\n", siginf->si_pid, siginf->si_status);
 			//exit(EXIT_SUCCESS);
+			child_dead_var =1;
 			break;
 		};
 		case SIGPIPE:
@@ -103,7 +104,7 @@ char **string_to_argv(char *string, int *argc)
 		argc_local++;
 	}
 	
-	printf("argc %d\n",argc_local);
+	//printf("argc %d\n",argc_local);
 	argv_local = (char**)malloc(argc_local+1);
 	int i = 0;
 	end = 0;
@@ -119,7 +120,7 @@ char **string_to_argv(char *string, int *argc)
 		argv_local[i] = malloc(arr_size+2);
 		memcpy(argv_local[i],string+begin,arr_size);
 		argv_local[i][arr_size] = '\0';
-		printf("argv %s\n",argv_local[i]);
+		//printf("argv %s\n",argv_local[i]);
 		
 		begin = end;
 		i++;
@@ -188,6 +189,11 @@ int handle_input(int fd)
 	if(byteswr>0)
 	{
 		write(fd,&writing_buf,byteswr);
+		writing_buf[byteswr+1] = '\0';
+		if(strcmp(writing_buf,"exit")==0)
+		{
+			exit(EXIT_SUCCESS);
+		}
 		writing_buf[byteswr+1] = '\n';
 		LOG(writing_buf,byteswr+2,0);
 		byteswr =0;
@@ -376,6 +382,10 @@ void multiplexer_signal()
 		{
 			LOG(NULL,0,-1);
 			lastio = time(NULL);
+		}
+		if(child_dead_var==1)
+		{
+			exit(EXIT_SUCCESS);
 		}
 	}
 }
