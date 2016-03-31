@@ -76,7 +76,7 @@ int main(int argc, char **argv)
 	}
 	if(logfile != NULL)
 	{
-		logfile_descr = open(logfile, O_WRONLY|O_CREAT);
+		logfile_descr = open(logfile, O_RDWR|O_CREAT);
 	}
 	
 	cmd.logfile_descr = logfile_descr;
