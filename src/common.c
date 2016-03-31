@@ -182,22 +182,25 @@ void LOG(char *buf, int size,int stream)
 
 int handle_input(int fd)
 {
-	while(read(STDIN_FILENO,&writing_buf+byteswr,1)>0)
+	while((read(STDIN_FILENO,writing_buf+byteswr,1))>0)
 	{
 		byteswr++;
 	}
+	
 	if(byteswr>0)
 	{
-		write(fd,&writing_buf,byteswr);
-		writing_buf[byteswr+1] = '\0';
+		write(fd,writing_buf,byteswr);
+		writing_buf[byteswr-1] = '\0';
 		if(strcmp(writing_buf,"exit")==0)
 		{
+			printf("[I]: EXIT\n");			
 			exit(EXIT_SUCCESS);
 		}
-		writing_buf[byteswr+1] = '\n';
-		LOG(writing_buf,byteswr+2,0);
+		writing_buf[byteswr-1] = '\n';
+		LOG(writing_buf,byteswr,0);
 		byteswr =0;
 	}
+	
 	return 0;
 }
 
@@ -298,6 +301,8 @@ void proc_manager(params *cmd)
 
 void multiplexer_select()
 {
+	//setbuf(stdin, NULL);
+	
 	fd_set rfds,wfds; //набор дескрипторов потоков с которых нужно ожидать чтение
 	fd_set rfdscopy = rfds,wfdscopy = wfds; //select портит fd_set и таймауты
 	struct timeval tv; //таймауты для select()
@@ -377,7 +382,6 @@ void multiplexer_signal()
 	while(1) 
 	{		
 		sleep(1);
-		//printf("dd\n");
 		if(time(NULL)>lastio)
 		{
 			LOG(NULL,0,-1);
