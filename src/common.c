@@ -168,7 +168,7 @@ void LOG(char *buf, int size,int stream)
 			sprintf(buffer," <%d ",stream);
 		write(logfileno,dtm,strlen(dtm));
 		write(logfileno,buffer,strlen(buffer));
-		write(STDOUT_FILENO,buf,size);
+		write(logfileno,buf,size);
 	}
 	else
 	{
