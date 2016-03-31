@@ -372,9 +372,10 @@ void multiplexer_signal()
 	{		
 		sleep(1);
 		//printf("dd\n");
-		if(time(NULL)+1>lastio)
+		if(time(NULL)>lastio)
 		{
 			LOG(NULL,0,-1);
+			lastio = time(NULL);
 		}
 	}
 }
